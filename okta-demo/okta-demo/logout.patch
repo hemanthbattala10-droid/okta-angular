@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Hemanth <hemanth@example.com>
+Date: Sun, 14 Sep 2025 17:34:00 +0530
+Subject: [PATCH] Setup logout functionality and post-logout redirect using Okta
+
+---
+ src/app/auth.service.ts        | 10 ++++++++++
+ src/app/logout.component.ts    |  6 +++---
+ src/app/app.component.html     |  1 +
+ 3 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/src/app/auth.service.ts b/src/app/auth.service.ts
+index 0000000..1111111 100644
+--- a/src/app/auth.service.ts
++++ b/src/app/auth.service.ts
+@@ -1,5 +1,15 @@
+ import { Injectable } from '@angular/core';
+ import { OktaAuthService } from '@okta/okta-angular';
+
+ @Injectable({
+   providedIn: 'root',
+ })
+ export class AuthService {
+   constructor(private oktaAuth: OktaAuthService) {}
+
++  logout() {
++    this.oktaAuth.signOut({
++      postLogoutRedirectUri: window.location.origin + '/login',
++    });
++  }
+ }
+
+diff --git a/src/app/logout.component.ts b/src/app/logout.component.ts
+index 0000000..2222222 100644
+--- a/src/app/logout.component.ts
++++ b/src/app/logout.component.ts
+@@ -1,7 +1,7 @@
+ import { Component } from '@angular/core';
+ import { AuthService } from './auth.service';
+
+ @Component({
+   selector: 'app-logout',
+-  template: `&lt;button (click)="logout()"&gt;Logout&lt;/button&gt;`
++  template: `<button (click)="logout()">Logout</button>`
+ })
+ export class LogoutComponent {
+   constructor(private auth: AuthService) {}
+   logout() {
+     this.auth.logout();
+   }
+ }
+
+diff --git a/src/app/app.component.html b/src/app/app.component.html
+index 0000000..3333333 100644
+--- a/src/app/app.component.html
++++ b/src/app/app.component.html
+@@ -1,3 +1,4 @@
++<app-logout></app-logout>
+ <router-outlet></router-outlet>
