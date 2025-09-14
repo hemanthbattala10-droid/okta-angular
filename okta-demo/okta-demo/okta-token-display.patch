@@ -1,0 +1,45 @@
+diff --git a/src/app/app.component.ts b/src/app/app.component.ts
+index e69de29..a1b2c3d 100644
+--- a/src/app/app.component.ts
++++ b/src/app/app.component.ts
+@@ -0,0 +1,38 @@
++import { Component, OnInit } from '@angular/core';
++import { OktaAuthService } from '@okta/okta-angular';
++
++@Component({
++  selector: 'app-root',
++  templateUrl: './app.component.html',
++  styleUrls: ['./app.component.css']
++})
++export class AppComponent implements OnInit {
++  idToken: string | null = null;
++  accessToken: string | null = null;
++
++  constructor(private oktaAuth: OktaAuthService) {}
++
++  async ngOnInit() {
++    const tokens = await this.oktaAuth.getAccessToken();
++    this.accessToken = tokens || null;
++
++    const idTokenObj = await this.oktaAuth.getIdToken();
++    this.idToken = idTokenObj || null;
++  }
++}
+diff --git a/src/app/app.component.html b/src/app/app.component.html
+index e69de29..d4e5f6a 100644
+--- a/src/app/app.component.html
++++ b/src/app/app.component.html
+@@ -0,0 +1,13 @@
++<div>
++  <h2>Okta Tokens</h2>
++  <div>
++    <strong>ID Token:</strong>
++    <pre *ngIf="idToken">{{ idToken }}</pre>
++    <span *ngIf="!idToken">Not available</span>
++  </div>
++  <div>
++    <strong>Access Token:</strong>
++    <pre *ngIf="accessToken">{{ accessToken }}</pre>
++    <span *ngIf="!accessToken">Not available</span>
++  </div>
++</div>

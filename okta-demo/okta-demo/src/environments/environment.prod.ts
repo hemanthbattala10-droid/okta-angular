@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
   okta: {
-    clientId: 'YOUR_OKTA_CLIENT_ID',
-    issuer: 'https://YOUR_OKTA_DOMAIN/oauth2/default',
-    redirectUri: 'http://localhost:4200/login/callback',
+    clientId: '0oajfu7rpj65M2FAh697',
+    issuer: 'https://demo-azure-marsupial-56101.okta.com/oauth2/ausjfu4hbumYKoFdA697',
+    redirectUri: 'https://super-space-goggles-6vqqwg6wprf5pqg-4200.app.github.dev/authorization-code/callback',
     scopes: ['openid', 'profile', 'email'],
     pkce: true
   }

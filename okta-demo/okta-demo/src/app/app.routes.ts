@@ -10,7 +10,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  { path: 'login/callback', component: OktaCallbackComponent }, // ✅ Add this
+  { path: 'authorization-code/callback', component: OktaCallbackComponent }, // ✅ Add this
   { path: '', redirectTo: '/profile', pathMatch: 'full' }
 ];
 
