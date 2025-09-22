@@ -1,7 +1,10 @@
-<!-- Show/Hide Tokens Button -->
-<button *ngIf="isAuthenticated" (click)="toggleTokens()">
-  {{ tokensVisible ? 'Hide Tokens' : 'Show Tokens' }}
-</button>
+<!-- Show/Hide Tokens Button (only when authenticated) -->
+<div *ngIf="isAuthenticated">
+  <button (click)="toggleTokens()">
+    {{ tokensVisible ? 'Hide Tokens' : 'Show Tokens' }}
+  </button>
+  <button (click)="logout()">Logout</button>
+</div>
 
 <!-- Token Display Section -->
 <div *ngIf="tokensVisible && (idToken || accessToken)">
@@ -17,3 +20,4 @@
     <pre>{{ accessToken }}</pre>
   </div>
 </div>
+
