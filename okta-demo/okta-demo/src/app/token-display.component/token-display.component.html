@@ -1,0 +1,13 @@
+<h2>🔐 Tokens</h2>
+
+<div *ngIf="idToken && accessToken; else loading">
+  <p><strong>ID Token:</strong></p>
+  <pre>{{ idToken }}</pre>
+
+  <p><strong>Access Token:</strong></p>
+  <pre>{{ accessToken }}</pre>
+</div>
+
+<ng-template #loading>
+  <p>Loading tokens...</p>
+</ng-template>
