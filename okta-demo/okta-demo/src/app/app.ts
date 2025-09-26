@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RouterModule, RouterOutlet, Router } from '@angular/router';
+import { RouterModule, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
 import { routes } from './app.routes';
@@ -15,11 +15,12 @@ import { AuthService } from './auth.service';
 })
 export class App implements OnInit {
   isAuthenticated = false;
-  userName = '';
+  userName = false;
   tokensVisible = false;
   idToken?: string;
   accessToken?: string;
   showLogoutMessage = false;
+  currentUrl = '';
 
   constructor(
     private auth: AuthService,
@@ -28,56 +29,61 @@ export class App implements OnInit {
   ) {}
 
   async ngOnInit() {
-  let hasCheckedAuth = false;
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.currentUrl = event.url;
+        this.cd.detectChanges();
+      }
+    });
 
-  this.auth.authState$.subscribe(async (authStatus) => {
-    this.isAuthenticated = authStatus;
+    let hasCheckedAuth = false;
 
-    if (authStatus) {
-      const idToken = await this.auth.getIdToken();
-      const accessToken = await this.auth.getAccessToken();
-      this.idToken = idToken || undefined;
-      this.accessToken = accessToken || undefined;
+    this.auth.authState$.subscribe(async (authStatus) => {
+      this.isAuthenticated = authStatus;
 
-      if (idToken) {
-        const decoded: any = jwtDecode(idToken);
-        this.userName =
-          decoded.name ||
-          decoded.preferred_username ||
-          decoded.email ||
-          decoded.sub ||
-          'User';
+      if (authStatus) {
+        const idToken = await this.auth.getIdToken();
+        const accessToken = await this.auth.getAccessToken();
+        this.idToken = idToken || undefined;
+        this.accessToken = accessToken || undefined;
+
+        if (idToken) {
+          const decoded: any = jwtDecode(idToken);
+          this.userName =
+            decoded.name ||
+            decoded.preferred_username ||
+            decoded.email ||
+            decoded.sub ||
+            '';
+        }
+
+        this.showLogoutMessage = false;
+      } else {
+        this.idToken = undefined;
+        this.accessToken = undefined;
+        //this.userName = '';
+        this.tokensVisible = false;
+        this.showLogoutMessage = hasCheckedAuth;
       }
 
-      this.showLogoutMessage = false;
-    } else {
-      this.idToken = undefined;
-      this.accessToken = undefined;
-      this.userName = '';
-      this.tokensVisible = false;
-
-      // Only show logout message if we've already checked auth once
-      this.showLogoutMessage = hasCheckedAuth;
-    }
-
-    hasCheckedAuth = true;
-    this.cd.detectChanges();
-  });
-}
-
+      hasCheckedAuth = true;
+      this.cd.detectChanges();
+    });
+  }
 
   login() {
-    this.auth.login(); // triggers Okta login redirect
+    this.auth.login();
   }
 
   async logout() {
-    await this.auth.logout(); // revoke tokens and end session
+    await this.auth.logout();
     this.isAuthenticated = false;
-    this.userName = '';
+    //this.userName = '';
     this.idToken = undefined;
     this.accessToken = undefined;
     this.tokensVisible = false;
     this.showLogoutMessage = true;
+    //this.router.navigate(['/']);
     this.cd.detectChanges();
   }
 

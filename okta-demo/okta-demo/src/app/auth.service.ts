@@ -1,4 +1,3 @@
-// auth.service.ts
 import { Injectable } from '@angular/core';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { BehaviorSubject } from 'rxjs';
@@ -21,10 +20,12 @@ export class AuthService {
 
   // 🚪 Sign out and redirect to postLogoutRedirectUri
   async logout(): Promise<void> {
+    // Let Okta handle session termination and redirect
     await this.oktaAuth.signOut({
       postLogoutRedirectUri: oktaAuthConfig.postLogoutRedirectUri
     });
-    this.authState.next(false); // Update state
+
+    // Do NOT manually set authState here — let checkAuth handle it after redirect
   }
 
   // ✅ Check if user is authenticated
@@ -55,5 +56,10 @@ export class AuthService {
   async checkAuth(): Promise<void> {
     const isAuth = await this.oktaAuth.isAuthenticated();
     this.authState.next(isAuth);
+  }
+
+  // 🔧 Expose OktaAuth instance if needed
+  get oktaAuthInstance(): OktaAuth {
+    return this.oktaAuth;
   }
 }
