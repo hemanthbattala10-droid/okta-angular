@@ -8,7 +8,16 @@ import { Observable } from 'rxjs';
   selector: 'app-logout',
   standalone: true,
   template: `
-    <button *ngIf="authState$ | async" (click)="logout()">Logout</button>
+    <div *ngIf="authState$ | async; else loggedOut">
+      <button (click)="logout()">Logout</button>
+    </div>
+
+    <ng-template #loggedOut>
+      <h2>🎉 Congrats, you're logged out successfully!</h2>
+      <p>You’ve been securely signed out of your session.</p>
+      <button routerLink="/">Return to Home</button>
+      <button routerLink="/login">Login Again</button>
+    </ng-template>
   `,
   imports: [NgIf, AsyncPipe]
 })
@@ -21,8 +30,7 @@ export class LogoutComponent {
 
   async logout() {
     try {
-      await this.auth.logout();
-      this.router.navigate(['/login']); // Redirect immediately after logout
+      await this.auth.logout(); // Redirects back to this component
     } catch (error) {
       console.error('Logout failed:', error);
     }

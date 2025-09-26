@@ -6,21 +6,49 @@
 <!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
 <!-- * * * * * * * to get started with your project! * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- app.component.html -->
-  <h2>👋 Welcome to hemanth Demo application </h2>
+<h2>👋 Welcome to Hemanth's Demo Application</h2>
 
+<!-- Logged Out Message -->
+<div *ngIf="showLogoutMessage" style="margin-top: 1rem; color: red;">
+  <strong>You have been logged out.</strong>
+</div>
+
+<!-- Home Page Controls -->
+<div *ngIf="router.url.startsWith('/') && !showLogoutMessage">
+  <h3 *ngIf="isAuthenticated">Welcome {{ userName }}</h3>
+
+  <!-- Auth Buttons -->
   <div style="margin-top: 1rem;">
+    <button *ngIf="!isAuthenticated" (click)="login()">Login</button>
+    <button *ngIf="isAuthenticated" (click)="logout()">Logout</button>
+  </div>
+
+  <!-- Show/Hide Tokens Button -->
+  <div *ngIf="isAuthenticated" style="margin-top: 1rem;">
     <button (click)="toggleTokens()">
-      {{ showTokens ? 'Hide Tokens' : 'Show Tokens' }}
+      {{ tokensVisible ? 'Hide Tokens' : 'Show Tokens' }}
     </button>
-    <button routerLink="/logout">Logout</button>
   </div>
 
-  <div *ngIf="showTokens" style="margin-top: 2rem;">
-    <app-token-display></app-token-display>
-  </div>
+  <!-- Token Display Section -->
+  <div *ngIf="tokensVisible && (idToken || accessToken)" style="margin-top: 2rem;">
+    <h3>🔐 Authentication Tokens</h3>
 
+    <div *ngIf="idToken">
+      <strong>ID Token:</strong>
+      <pre>{{ idToken }}</pre>
+    </div>
+
+    <div *ngIf="accessToken">
+      <strong>Access Token:</strong>
+      <pre>{{ accessToken }}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Routed Views -->
 <router-outlet></router-outlet>
+
 
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
@@ -31,4 +59,3 @@
 <!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<router-outlet />
