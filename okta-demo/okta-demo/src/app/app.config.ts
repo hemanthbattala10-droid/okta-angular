@@ -1,8 +1,12 @@
- import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-
 import { routes } from './app.routes';
+
 import { OktaAuth } from '@okta/okta-auth-js';
 import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
 import { oktaAuthConfig } from './okta-config';
@@ -14,7 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
     importProvidersFrom(OktaAuthModule),
     { provide: OKTA_CONFIG, useValue: { oktaAuth } }
   ]
