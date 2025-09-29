@@ -1,18 +1,103 @@
- import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import {
+  RouterModule,
+  RouterOutlet,
+  Router,
+  NavigationEnd,
+  provideRouter
+} from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { jwtDecode } from 'jwt-decode';
+import { routes } from './app.routes';
+import { AuthService } from './auth.service';
+import { provideHttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [CommonModule, RouterModule, RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('okta-demo');
+export class App implements OnInit {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+  
 
-  trackByTitle(index: number, item: { title: string; link: string }) {
-    return item.title;
+  isAuthenticated = false;
+  userName: string | boolean = false;
+  tokensVisible = false;
+  idToken?: string;
+  accessToken?: string;
+  showLogoutMessage = false;
+  currentUrl = '';
+
+  async ngOnInit() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.currentUrl = event.url;
+        this.cd.detectChanges();
+      }
+    });
+
+    let hasCheckedAuth = false;
+
+    this.auth.authState$.subscribe(async (authStatus) => {
+      this.isAuthenticated = authStatus;
+
+      if (authStatus) {
+        const idToken = await this.auth.getIdToken();
+        const accessToken = await this.auth.getAccessToken();
+        this.idToken = idToken || undefined;
+        this.accessToken = accessToken || undefined;
+
+        if (idToken) {
+          const decoded: any = jwtDecode(idToken);
+          this.userName =
+            decoded.name ||
+            decoded.preferred_username ||
+            decoded.email ||
+            decoded.sub ||
+            '';
+        }
+
+        this.showLogoutMessage = false;
+      } else {
+        this.idToken = undefined;
+        this.accessToken = undefined;
+        this.tokensVisible = false;
+        this.showLogoutMessage = hasCheckedAuth;
+      }
+
+      hasCheckedAuth = true;
+      this.cd.detectChanges();
+    });
   }
+
+  login() {
+    this.auth.login();
+  }
+
+  async logout() {
+    await this.auth.logout();
+    this.isAuthenticated = false;
+    this.idToken = undefined;
+    this.accessToken = undefined;
+    this.tokensVisible = false;
+    this.showLogoutMessage = true;
+    this.cd.detectChanges();
+  }
+
+  toggleTokens() {
+    this.tokensVisible = !this.tokensVisible;
+  }
+
 }
+
+bootstrapApplication(App, {
+  providers: [provideRouter(routes),
+    provideHttpClient()
+  ]
+});
