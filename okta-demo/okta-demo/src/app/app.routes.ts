@@ -8,6 +8,9 @@ import { OktaCallbackComponent } from '@okta/okta-angular';
 import { appConfig } from './app.config';
 import { App } from './app'; // ✅ Matches your bootstrap file
 import { isLoginRedirect } from '@okta/okta-auth-js';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+
 
 //import { AppComponent } from AppComponent ;
 
@@ -18,6 +21,6 @@ export const routes: Routes = [
   { path: 'tokens', component: TokenDisplayComponent, canActivate: [AuthGuard] },
   { path: 'authorization-code/callback', component: OktaCallbackComponent },
   { path: 'logged-out', component: LogoutComponent }  ,
-  //{ path: '', component: App } ,
-{ path: '', redirectTo: '/profile', pathMatch: 'full' }
+  { path: '', component: App } ,
+//{ path: '', redirectTo: '/profile', pathMatch: 'full' }
 ];

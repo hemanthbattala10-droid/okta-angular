@@ -4,37 +4,40 @@
 <div *ngIf="showLogoutMessage" style="margin-top: 1rem; color: red;">
   <strong>You have been logged out.</strong>
 </div>
-
 <!-- Home Page Controls -->
 <div *ngIf="currentUrl === '/' && !showLogoutMessage">
-  <!-- Auth Buttons -->
+  <!-- Login Button -->
   <div style="margin-top: 1rem;">
     <button *ngIf="!isAuthenticated" (click)="login()">Login</button>
-    <button *ngIf="isAuthenticated" (click)="logout()">Logout</button>
   </div>
 
-  <!-- Show/Hide Tokens Button -->
+  <!-- Authenticated Controls -->
   <div *ngIf="isAuthenticated" style="margin-top: 1rem;">
-    <button (click)="toggleTokens()">
-      {{ tokensVisible ? 'Hide Tokens' : 'Show Tokens' }}
-    </button>
-  </div>
+    <button (click)="logout()">Logout</button>
+    
 
-  <!-- Token Display Section -->
-  <div *ngIf="tokensVisible && (idToken || accessToken)" style="margin-top: 2rem;">
-    <h3>🔐 Authentication Tokens</h3>
-
-    <div *ngIf="idToken">
-      <strong>ID Token:</strong>
-      <pre>{{ idToken }}</pre>
+    <!-- Show/Hide Tokens Button -->
+    <div style="margin-top: 1rem;">
+      <button (click)="toggleTokens()">
+        {{ tokensVisible ? 'Hide Tokens' : 'Show Tokens' }}
+      </button>
     </div>
 
-    <div *ngIf="accessToken">
-      <strong>Access Token:</strong>
-      <pre>{{ accessToken }}</pre>
+    <!-- Token Display Section -->
+    <div *ngIf="tokensVisible && (idToken || accessToken)" style="margin-top: 2rem;">
+      <h3>🔐 Authentication Tokens</h3>
+
+      <div *ngIf="idToken">
+        <strong>ID Token:</strong>
+        <pre>{{ idToken }}</pre>
+      </div>
+
+      <div *ngIf="accessToken">
+        <strong>Access Token:</strong>
+        <pre>{{ accessToken }}</pre>
+      </div>
     </div>
   </div>
-</div> <!-- ✅ This closes the Home Page Controls div -->
-
+</div>
 <!-- Routed Views -->
 <router-outlet></router-outlet>

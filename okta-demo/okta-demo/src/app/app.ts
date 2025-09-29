@@ -1,10 +1,17 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RouterModule, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import {
+  RouterModule,
+  RouterOutlet,
+  Router,
+  NavigationEnd,
+  provideRouter
+} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
 import { routes } from './app.routes';
 import { AuthService } from './auth.service';
+import { provideHttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -14,19 +21,18 @@ import { AuthService } from './auth.service';
   styleUrl: './app.css'
 })
 export class App implements OnInit {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+  
+
   isAuthenticated = false;
-  userName = false;
+  userName: string | boolean = false;
   tokensVisible = false;
   idToken?: string;
   accessToken?: string;
   showLogoutMessage = false;
   currentUrl = '';
-
-  constructor(
-    private auth: AuthService,
-    public router: Router,
-    private cd: ChangeDetectorRef
-  ) {}
 
   async ngOnInit() {
     this.router.events.subscribe(event => {
@@ -61,7 +67,6 @@ export class App implements OnInit {
       } else {
         this.idToken = undefined;
         this.accessToken = undefined;
-        //this.userName = '';
         this.tokensVisible = false;
         this.showLogoutMessage = hasCheckedAuth;
       }
@@ -78,22 +83,21 @@ export class App implements OnInit {
   async logout() {
     await this.auth.logout();
     this.isAuthenticated = false;
-    //this.userName = '';
     this.idToken = undefined;
     this.accessToken = undefined;
     this.tokensVisible = false;
     this.showLogoutMessage = true;
-    //this.router.navigate(['/']);
     this.cd.detectChanges();
   }
 
   toggleTokens() {
     this.tokensVisible = !this.tokensVisible;
   }
+
 }
 
-import { provideRouter } from '@angular/router';
-
 bootstrapApplication(App, {
-  providers: [provideRouter(routes)]
+  providers: [provideRouter(routes),
+    provideHttpClient()
+  ]
 });
